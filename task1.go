@@ -117,9 +117,9 @@ func readLengthAndWidth(rd *bufio.Reader) (l int, w int, err error) {
 }
 
 // <-----------------Alghorithm------------------> //
-// We have two matrices, this is matrix A,		   //
-// the occurrences of which we will look		   //
-// for in matrix B, for this we will simply		   //
+// We have two matrices, this is matrix A,         //
+// the occurrences of which we will look           //
+// for in matrix B, for this we will simply        //
 // compare all values from the matrixA in          //
 // matrix B and write the results of comparing     //
 // into the matrix that was initialized above,     //
