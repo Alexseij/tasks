@@ -2,9 +2,7 @@ package tasks
 
 import (
 	"bufio"
-	"fmt"
 	"io"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -99,43 +97,44 @@ func findNeedPermutations(trains map[int]map[int][]int) map[int]map[int]string {
 	return result
 }
 
-func writeDataForTask3(output *os.File, result map[int]map[int]string) (int, error) {
-	amountOfBytes := 0
+// func writeDataForTask3(output *os.File, result map[int]map[int]string) (int, error) {
+// 	amountOfBytes := 0
 
-	for _, roads := range result {
-		for _, answer := range roads {
-			msg := fmt.Sprintf("%s\n", answer)
+// 	for numRoad, roads := range result {
+// 		road := result[numRoad]
+// 		for numAnswer, answer := range roads {
+// 			msg := fmt.Sprintf("%s\n", result)
 
-			writedBytes, err := output.Write([]byte(msg))
-			amountOfBytes += writedBytes
+// 			writedBytes, err := output.Write([]byte(msg))
+// 			amountOfBytes += writedBytes
 
-			if err != nil {
-				return amountOfBytes, err
-			}
+// 			if err != nil {
+// 				return amountOfBytes, err
+// 			}
 
-		}
-		writedBytes, err := output.Write([]byte("\n"))
-		amountOfBytes += writedBytes
-		if err != nil {
-			return amountOfBytes, err
-		}
-	}
+// 		}
+// 		writedBytes, err := output.Write([]byte("\n"))
+// 		amountOfBytes += writedBytes
+// 		if err != nil {
+// 			return amountOfBytes, err
+// 		}
+// 	}
 
-	return amountOfBytes, nil
-}
+// 	return amountOfBytes, nil
+// }
 
-func StartTask3(input, output *os.File) {
-	rd := bufio.NewReader(input)
+// func StartTask3(input, output *os.File) {
+// 	rd := bufio.NewReader(input)
 
-	trains, err := readBlocks(rd)
-	if err != nil {
-		panic("read block")
-	}
+// 	trains, err := readBlocks(rd)
+// 	if err != nil {
+// 		panic("read block")
+// 	}
+// 	fmt.Print(trains)
+// 	result := findNeedPermutations(trains)
 
-	result := findNeedPermutations(trains)
-
-	_, err = writeDataForTask3(output, result)
-	if err != nil {
-		panic("write date for task")
-	}
-}
+// 	_, err = writeDataForTask3(output, result)
+// 	if err != nil {
+// 		panic("write date for task")
+// 	}
+// }

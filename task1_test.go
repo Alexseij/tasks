@@ -17,6 +17,16 @@ var (
 	flagMaxWidth           = flag.Int("width", 10, "This flag using for max width of matrix , when it prepare for generating.")
 )
 
+var (
+	patternMatrix = [][]string{
+		{"1", "1", "0", "0", "0"},
+		{"0", "1", "1", "0", "0"},
+		{"1", "0", "0", "1", "0"},
+		{"1", "1", "1", "1", "0"},
+		{"0", "0", "1", "1", "1"},
+	}
+)
+
 // Function using for comparing two matrices
 // Returns : true - if they equals , else false
 func compareMatrix(matrixA, matrixB [][]string) bool {
@@ -65,7 +75,8 @@ func generateMatrix(minLength, minWidth, maxLenght, maxWidth int) (l int, w int,
 	return length, width, result
 }
 
-func bindTestMatrix(sample [][]string, length, width int) [][]string {
+//Function using for copying sample matrix into testMatrix
+func bindMatrix(sample [][]string, length, width int) [][]string {
 	testMatrix := make([][]string, length)
 	for i := range sample {
 		testMatrix[i] = make([]string, width)
@@ -126,6 +137,7 @@ func TestTask1Empty(t *testing.T) {
 
 }
 
+// This test checks situations where matrix A have size bigger then matrix B on width and length
 func TestTask1BigEnoguhtSize(t *testing.T) {
 	amountOfIteration := *flagAmountOfIterations
 	for amountOfIteration != 0 {
@@ -134,7 +146,7 @@ func TestTask1BigEnoguhtSize(t *testing.T) {
 
 		lengthA, widthA, matrixA := generateMatrix(lengthTest+1, widthTest+1, *flagMaxLength+1, *flagMaxWidth+1)
 
-		want := bindTestMatrix(testMatrix, lengthTest, widthTest)
+		want := bindMatrix(testMatrix, lengthTest, widthTest)
 
 		tasks.Task1(matrixA, testMatrix, lengthA, widthA, lengthTest, widthTest)
 
@@ -146,6 +158,7 @@ func TestTask1BigEnoguhtSize(t *testing.T) {
 
 }
 
+//This test checks situations where matrix A have size bigger then matrix B only on width
 func TestTask1BigEnoguhtSizeWidth(t *testing.T) {
 	amountOfIteration := *flagAmountOfIterations
 
@@ -155,7 +168,7 @@ func TestTask1BigEnoguhtSizeWidth(t *testing.T) {
 
 		lengthA, widthA, matrixA := generateMatrix(0, widthTest+1, *flagMaxLength, *flagMaxWidth+1)
 
-		want := bindTestMatrix(testMatrix, lengthTest, widthTest)
+		want := bindMatrix(testMatrix, lengthTest, widthTest)
 
 		tasks.Task1(matrixA, testMatrix, lengthA, widthA, lengthTest, widthTest)
 
@@ -166,6 +179,7 @@ func TestTask1BigEnoguhtSizeWidth(t *testing.T) {
 	}
 }
 
+//This test checks situations where matrix A have size bigger then matrix B only on length
 func TestTask1BigEnoguhtSizeLength(t *testing.T) {
 
 	amountOfIteration := *flagAmountOfIterations
@@ -176,7 +190,7 @@ func TestTask1BigEnoguhtSizeLength(t *testing.T) {
 
 		lengthA, widthA, matrixA := generateMatrix(lengthTest+1, 0, *flagMaxLength+1, *flagMaxWidth)
 
-		want := bindTestMatrix(testMatrix, lengthTest, widthTest)
+		want := bindMatrix(testMatrix, lengthTest, widthTest)
 
 		tasks.Task1(matrixA, testMatrix, lengthA, widthA, lengthTest, widthTest)
 
@@ -187,23 +201,72 @@ func TestTask1BigEnoguhtSizeLength(t *testing.T) {
 	}
 }
 
-func TestTask1RandomMatrix(t *testing.T) {
-	amountOfIteration := *flagAmountOfIterations
+// <-- This tests checks input data from task -- > //
 
-	for amountOfIteration != 0 {
-		//Test matrix it's B matrix in task
-		lengthTest, widthTest, testMatrix := generateMatrix(0, 0, *flagMaxLength, *flagMaxWidth)
+func TestTask1OnMatrixFromSampleInputFirst(t *testing.T) {
+	matrixA := [][]string{
+		{"1", "0"},
+		{"1", "1"},
+	}
 
-		lengthA, widthA, matrixA := generateMatrix(0, 0, *flagMaxLength, *flagMaxWidth)
+	testMatrix := bindMatrix(patternMatrix, 5, 5)
 
-		want := bindTestMatrix(testMatrix, lengthTest, widthTest)
+	want := [][]string{
+		{"1", "2", "*", "0", "0"},
+		{"0", "2", "2", "0", "0"},
+		{"2", "*", "0", "1", "0"},
+		{"2", "2", "1", "2", "*"},
+		{"0", "0", "1", "2", "2"},
+	}
 
-		tasks.Task1(matrixA, testMatrix, lengthA, widthA, lengthTest, widthTest)
+	tasks.Task1(matrixA, testMatrix, 2, 2, 5, 5)
 
-		if !compareMatrix(want, testMatrix) {
-			printFatalMsg(t, testMatrix, want, matrixA)
-		}
-		amountOfIteration--
+	if !compareMatrix(want, testMatrix) {
+		printFatalMsg(t, testMatrix, want, matrixA)
+	}
+}
+
+func TestTask1OnMatrixFromSampleInputSecond(t *testing.T) {
+	matrixA := [][]string{
+		{"1"},
+	}
+
+	testMatrix := bindMatrix(patternMatrix, 5, 5)
+
+	want := [][]string{
+		{"2", "2", "0", "0", "0"},
+		{"0", "2", "2", "0", "0"},
+		{"2", "0", "0", "2", "0"},
+		{"2", "2", "2", "2", "0"},
+		{"0", "0", "2", "2", "2"},
+	}
+
+	tasks.Task1(matrixA, testMatrix, 1, 1, 5, 5)
+
+	if !compareMatrix(want, testMatrix) {
+		printFatalMsg(t, testMatrix, want, matrixA)
+	}
+
+}
+func TestTask1OnMatrixFromSampleInputThird(t *testing.T) {
+	matrixA := [][]string{
+		{"0"},
+	}
+
+	testMatrix := bindMatrix(patternMatrix, 5, 5)
+
+	want := [][]string{
+		{"1", "1", "*", "*", "*"},
+		{"*", "1", "1", "*", "*"},
+		{"1", "*", "*", "1", "*"},
+		{"1", "1", "1", "1", "*"},
+		{"*", "*", "1", "1", "1"},
+	}
+
+	tasks.Task1(matrixA, testMatrix, 1, 1, 5, 5)
+
+	if !compareMatrix(want, testMatrix) {
+		printFatalMsg(t, testMatrix, want, matrixA)
 	}
 
 }

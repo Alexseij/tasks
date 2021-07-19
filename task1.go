@@ -2,7 +2,8 @@ package tasks
 
 import (
 	"bufio"
-	"log"
+	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -88,21 +89,23 @@ func changeMatrix(matrix [][]string, fromIndexLength, toIndexLength, fromIndexWi
 	}
 }
 
-func readLengthAndWidth(rd *bufio.Reader) (l int, w int) {
-	line, _ := rd.ReadString('\n')
-
+func readLengthAndWidth(rd *bufio.Reader) (l int, w int, err error) {
+	line, err := rd.ReadString('\n')
+	if err != nil && err != io.EOF {
+		return 0, 0, err
+	}
 	splitLine := strings.Split(strings.TrimSpace(line), " ")
 
 	length, err := strconv.Atoi(splitLine[0])
 	if err != nil {
-		log.Fatal(err)
+		return 0, 0, err
 	}
 	width, err := strconv.Atoi(splitLine[1])
 	if err != nil {
-		log.Fatal(err)
+		return 0, 0, err
 	}
 
-	return length, width
+	return length, width, nil
 }
 
 func Task1(matrixA, matrixB [][]string, lengthA, widthA, lengthB, widthB int) {
@@ -135,34 +138,57 @@ func Task1(matrixA, matrixB [][]string, lengthA, widthA, lengthB, widthB int) {
 	}
 }
 
-func writeDataForTask1(matrixB [][]string, output *os.File, lengthB, widthB int) {
+func writeDataForTask1(matrixB [][]string, output *os.File, lengthB, widthB int) (int, error) {
+	amountOfBytes := 0
+
 	for i := 0; i < lengthB; i++ {
 		for j := 0; j < widthB; j++ {
-			output.Write([]byte(matrixB[i][j]))
-			output.Write([]byte(" "))
+			value := fmt.Sprintf("%s ", matrixB[i][j])
+			bytes, err := output.Write([]byte(value))
+			amountOfBytes += bytes
+			if err != nil {
+				return amountOfBytes, err
+			}
 		}
-		output.Write([]byte("\n"))
+		bytes, err := output.Write([]byte("\n"))
+		amountOfBytes += bytes
+		if err != nil && err != io.EOF {
+			return amountOfBytes, err
+		}
 	}
-
+	return amountOfBytes, nil
 }
 
-func StartTask1(input, output *os.File) {
+func StartTask1(input, output *os.File) error {
 
 	rd := bufio.NewReader(input)
 
-	lengthA, widthA := readLengthAndWidth(rd)
-	matrixA, err := createMatrix(lengthA, widthA, rd)
+	lengthA, widthA, err := readLengthAndWidth(rd)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	lengthB, widthB := readLengthAndWidth(rd)
+	matrixA, err := createMatrix(lengthA, widthA, rd)
+	if err != nil {
+		return err
+	}
+
+	lengthB, widthB, err := readLengthAndWidth(rd)
+	if err != nil {
+		return err
+	}
+
 	matrixB, err := createMatrix(lengthB, widthB, rd)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	Task1(matrixA, matrixB, lengthA, widthA, lengthB, widthB)
 
-	writeDataForTask1(matrixB, output, lengthB, widthB)
+	_, err = writeDataForTask1(matrixB, output, lengthB, widthB)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
