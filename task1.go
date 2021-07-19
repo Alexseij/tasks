@@ -20,6 +20,8 @@ const (
 	ZERO_INDEX   = "0"
 )
 
+//Function using for read matrix data from input file
+//Returns : matrix with size length x width , or error
 func createMatrix(length, width int, rd *bufio.Reader) ([][]string, error) {
 
 	if length == 0 || width == 0 {
@@ -41,6 +43,8 @@ func createMatrix(length, width int, rd *bufio.Reader) ([][]string, error) {
 	return result, nil
 }
 
+//Function using for check all true values in param matrix
+//Returns : if all values is true - true , else false
 func allIsTrue(matrix [][]bool, length, width int) bool {
 	isAllTrue := true
 	for i := 0; i < length; i++ {
@@ -54,6 +58,7 @@ func allIsTrue(matrix [][]bool, length, width int) bool {
 	return isAllTrue
 }
 
+//Fuction using for clear data after using in matrix
 func updateCheckMatrix(matrix [][]bool, length, width int) {
 	for i := 0; i < length; i++ {
 		for j := 0; j < width; j++ {
@@ -62,9 +67,10 @@ func updateCheckMatrix(matrix [][]bool, length, width int) {
 	}
 }
 
+//Fucntion check equals between matrixA and matrixB from given indexes
+//all results of comparing writes in matrix with size lengthA , widthA and type [][]bool
 func check(checkMatrix [][]bool, matrixA, matrixB [][]string, fromIndexLength, toIndexLength, fromIndexWidth, toIndexWidth int) {
 	indexLengthA, indexWidthA := 0, 0
-	//Invariant teels everithing is ok :-)
 	for i := fromIndexLength; i <= toIndexLength; i++ {
 		for j := fromIndexWidth; j <= toIndexWidth; j++ {
 			if matrixA[indexLengthA][indexWidthA] == matrixB[i][j] {
@@ -77,6 +83,7 @@ func check(checkMatrix [][]bool, matrixA, matrixB [][]string, fromIndexLength, t
 	}
 }
 
+//Fuction for changing matrix B values
 func changeMatrix(matrix [][]string, fromIndexLength, toIndexLength, fromIndexWidth, toIndexWidth int) {
 	for i := fromIndexLength; i < toIndexLength; i++ {
 		for j := fromIndexWidth; j < toIndexWidth; j++ {
@@ -89,6 +96,7 @@ func changeMatrix(matrix [][]string, fromIndexLength, toIndexLength, fromIndexWi
 	}
 }
 
+//Function using for reading legnth and width form current matrix from input file
 func readLengthAndWidth(rd *bufio.Reader) (l int, w int, err error) {
 	line, err := rd.ReadString('\n')
 	if err != nil && err != io.EOF {
@@ -108,12 +116,23 @@ func readLengthAndWidth(rd *bufio.Reader) (l int, w int, err error) {
 	return length, width, nil
 }
 
-func Task1(matrixA, matrixB [][]string, lengthA, widthA, lengthB, widthB int) {
+// <-----------------Alghorithm------------------> //
+// We have two matrices, this is matrix A,		   //
+// the occurrences of which we will look		   //
+// for in matrix B, for this we will simply		   //
+// compare all values from the matrixA in          //
+// matrix B and write the results of comparing     //
+// into the matrix that was initialized above,     //
+// namely the true - says that the values at the   //
+// current index in matrix a coincided with the    //
+// value in matrix B otherwise false               //
 
+func Task1(matrixA, matrixB [][]string, lengthA, widthA, lengthB, widthB int) {
+	// Pointless matrix
 	if lengthA == 0 || widthA == 0 {
 		return
 	}
-
+	// Matrix storing matches of matrices A in matrix B
 	checkMatrix := make([][]bool, lengthA)
 
 	for i := 0; i < lengthA; i++ {
@@ -123,11 +142,12 @@ func Task1(matrixA, matrixB [][]string, lengthA, widthA, lengthB, widthB int) {
 		}
 		checkMatrix[i] = row
 	}
-
+	// lengthB-(lengthB%lengthA) and widthB-(widthB%widthA) using for decreesse interations in cycle
 	for i := 0; i < lengthB-(lengthB%lengthA); i++ {
 		for j := 0; j < widthB-(widthB%widthA); j++ {
 			if matrixA[0][0] == matrixB[i][j] {
 				check(checkMatrix, matrixA, matrixB, i, i+lengthA-1, j, j+widthA-1)
+				//If matrixA and matrixB equals in current index flag have value true
 				flag := allIsTrue(checkMatrix, lengthA, widthA)
 				updateCheckMatrix(checkMatrix, lengthA, widthA)
 				if flag {
@@ -138,6 +158,8 @@ func Task1(matrixA, matrixB [][]string, lengthA, widthA, lengthB, widthB int) {
 	}
 }
 
+//Function using for writting data into output file
+//Returns : number of bytes written in file and error if it was
 func writeDataForTask1(matrixB [][]string, output *os.File, lengthB, widthB int) (int, error) {
 	amountOfBytes := 0
 
@@ -159,6 +181,8 @@ func writeDataForTask1(matrixB [][]string, output *os.File, lengthB, widthB int)
 	return amountOfBytes, nil
 }
 
+//Function using for start solving task
+//Returns : error if have trouble with I/O
 func StartTask1(input, output *os.File) error {
 
 	rd := bufio.NewReader(input)
