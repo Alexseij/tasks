@@ -89,9 +89,6 @@ func initClusterCoords() [][]byte {
 	clusterCoords := make([][]byte, HEIGHT_OF_GAME_PLACE)
 	for i := 0; i < HEIGHT_OF_GAME_PLACE; i++ {
 		row := make([]byte, WIDTH_OF_GAME_PLACE)
-		for j := 0; j < WIDTH_OF_GAME_PLACE; j++ {
-			row[j] = 0
-		}
 		clusterCoords[i] = row
 	}
 	return clusterCoords
@@ -121,13 +118,6 @@ func BindBoard(m map[int]Board) {
 	}
 }
 
-func printQueue(queue []*Ball) {
-	for i := 0; i < len(queue); i++ {
-		fmt.Print(queue[i].Value, " ")
-	}
-	fmt.Println()
-}
-
 func findClusterForCurrentBall(clusterCoords [][]byte, ball *Ball, size *int) {
 	queue := make([]*Ball, 0)
 	queue = append(queue, ball)
@@ -135,9 +125,6 @@ func findClusterForCurrentBall(clusterCoords [][]byte, ball *Ball, size *int) {
 	for len(queue) != 0 {
 		currentBall := queue[0]
 		queue = queue[1:]
-		// fmt.Printf("coords : (%d , %d)\n", currentBall.Y, currentBall.X)
-		// fmt.Println("left : ", currentBall.left, "right : ", currentBall.right, "up : ", currentBall.up, "down : ", currentBall.down)
-
 		if currentBall.left != nil && currentBall.left.Value == currentBall.Value && clusterCoords[currentBall.left.Y][currentBall.left.X] == 0 {
 			*(size)++
 			queue = append(queue, currentBall.left)
@@ -173,6 +160,14 @@ func findLeftMostBall(coords [][]byte, board Board) (*Ball, error) {
 	return nil, fmt.Errorf("Have no balls in cluster")
 }
 
+func findBottomMostBall(ball *Ball) *Ball {
+	currentBall := ball
+	for currentBall.down != nil && currentBall.down.Value == currentBall.Value {
+		currentBall = currentBall.down
+	}
+	return currentBall
+}
+
 func findLargestCluster(board Board) (int, *Ball, [][]byte, error) {
 
 	sizeOfMaxCluester := 0
@@ -185,7 +180,6 @@ func findLargestCluster(board Board) (int, *Ball, [][]byte, error) {
 				continue
 			}
 
-			//fmt.Println(board[i][j].Value)
 			currentSize := 1
 			currentClusterCoords := initClusterCoords()
 			currentClusterCoords[board[i][j].Y][board[i][j].X] = 1
@@ -198,10 +192,8 @@ func findLargestCluster(board Board) (int, *Ball, [][]byte, error) {
 				if err != nil {
 					return 0, nil, nil, err
 				}
-				for ball.down != nil && ball.down.Value == ball.Value {
-					ball = ball.down
-				}
-				maxBall = ball
+				maxBall = findBottomMostBall(ball)
+
 			} else if currentSize == sizeOfMaxCluester {
 				currentClusterBall, err := findLeftMostBall(currentClusterCoords, board)
 				if err != nil {
@@ -211,22 +203,11 @@ func findLargestCluster(board Board) (int, *Ball, [][]byte, error) {
 				if err != nil {
 					return 0, nil, nil, err
 				}
-				if currentClusterBall.X < maxClusterBall.X {
-					maxClusterCoords = currentClusterCoords
-					ball := currentClusterBall
-					for ball.down != nil && ball.down.Value == ball.Value {
-						ball = ball.down
-					}
-					maxBall = ball
-				} else if currentClusterBall.X == maxClusterBall.X && currentClusterBall.Y >= maxClusterBall.Y {
-					maxClusterCoords = currentClusterCoords
-					ball := currentClusterBall
-					for ball.down != nil && ball.down.Value == ball.Value {
-						ball = ball.down
-					}
-					maxBall = ball
-				}
 
+				if (currentClusterBall.X < maxClusterBall.X) || (currentClusterBall.X == maxClusterBall.X && currentClusterBall.Y >= maxClusterBall.Y) {
+					maxClusterCoords = currentClusterCoords
+					maxBall = findBottomMostBall(currentClusterBall)
+				}
 			}
 
 		}
@@ -265,6 +246,9 @@ func checkIsAllNilRow(row int, board Board) bool {
 
 func shiftDown(board Board) {
 	for i := 0; i < WIDTH_OF_GAME_PLACE; i++ {
+		if checkIsAllNilColumn(i, board) {
+			continue
+		}
 		for j := HEIGHT_OF_GAME_PLACE - 1; j > 0; j-- {
 			k := j
 			for board[k][i] == nil && k > 0 {
@@ -430,7 +414,7 @@ func swapCols(board Board, from, to int) {
 func shitfLeft(board Board, mask [][]byte) {
 	if cols := isEmptyColumn(mask, board); cols != nil {
 		for i := 0; i < len(cols); i++ {
-			for j := cols[i] - i; j < WIDTH_OF_GAME_PLACE-1; j++ {
+			for j := cols[i] - i; j < WIDTH_OF_GAME_PLACE-i-1; j++ {
 				swapCols(board, j+1, j)
 			}
 		}
@@ -494,15 +478,6 @@ func checkIsAllClusterHaveOne(board Board) (bool, int) {
 	return true, countCountOfClusters
 }
 
-func printMatrix(mask [][]byte) {
-	for i := 0; i < HEIGHT_OF_GAME_PLACE; i++ {
-		for j := 0; j < WIDTH_OF_GAME_PLACE; j++ {
-			fmt.Print(mask[i][j], " ")
-		}
-		fmt.Println()
-	}
-}
-
 func playGame(board Board) error {
 
 	scope := 0
@@ -546,19 +521,6 @@ func playGame(board Board) error {
 	fmt.Printf("Final scope: %d , with %d balls remaining.\n", scope, countOfAloneClusters)
 	fmt.Println()
 	return nil
-}
-
-func printBoard(board Board) {
-	for j := 0; j < HEIGHT_OF_GAME_PLACE; j++ {
-		for k := 0; k < WIDTH_OF_GAME_PLACE; k++ {
-			if board[j][k] == nil {
-				fmt.Print("n ")
-				continue
-			}
-			fmt.Print(board[j][k].Value, " ")
-		}
-		fmt.Println()
-	}
 }
 
 func Task2(rd *bufio.Reader) error {
