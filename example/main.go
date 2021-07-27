@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -23,7 +25,7 @@ var outputFile = flag.String("output", "output.txt", "file using for output data
 
 func main() {
 
-	go spinner(100 * time.Millisecond)
+	// go spinner(200 * time.Millisecond)
 
 	file, err := os.Open(*inputFile)
 	if err != nil {
@@ -37,6 +39,10 @@ func main() {
 	}
 	defer output.Close()
 
-	tasks.StartTask1(file, output)
+	rd := bufio.NewReader(file)
 
+	err = tasks.Task2(rd)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
