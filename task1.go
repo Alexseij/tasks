@@ -32,7 +32,7 @@ func createMatrix(length, width int, rd *bufio.Reader) ([][]string, error) {
 
 	for i := 0; i < length; i++ {
 		line, err := rd.ReadString('\n')
-		if err != nil {
+		if err != nil && err != io.EOF {
 			return nil, err
 		}
 
@@ -168,7 +168,7 @@ func writeDataForTask1(matrixB [][]string, output *os.File, lengthB, widthB int)
 			value := fmt.Sprintf("%s ", matrixB[i][j])
 			bytes, err := output.Write([]byte(value))
 			amountOfBytes += bytes
-			if err != nil {
+			if err != nil && err != io.EOF {
 				return amountOfBytes, err
 			}
 		}
