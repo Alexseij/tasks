@@ -1,10 +1,12 @@
 # How does it use ?
 
-Use command : `go run main.go` .that command has three flags :
+Use command : `go run main.go -task="TASK_NAME"`.
 
-`-input` - path to input file (by default example/input.txt)
-`-output` - path to output file (by default example/output.txt)
-`-task` - which task is using
+That command has three flags :
+
+`-input` - path to input file (by default example/input.txt).
+`-output` - path to output file (by default example/output.txt).
+`-task` - which task is using.
 
 # Values for -task
 
