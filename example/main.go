@@ -1,31 +1,24 @@
 package main
 
 import (
-	"bufio"
 	"flag"
-	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/Alexseij/tasks"
 )
 
-func spinner(delay time.Duration) {
-	for {
-		for _, v := range `-\|/` {
-			fmt.Printf("\r%c", v)
-			time.Sleep(delay)
-		}
-	}
-}
-
 var inputFile = flag.String("input", "input.txt", "file using for input data.")
 var outputFile = flag.String("output", "output.txt", "file using for output data.")
+var task = flag.String("task", "", "flag using for choose current task execution")
 
 func main() {
 
-	// go spinner(200 * time.Millisecond)
+	flag.Parse()
+
+	if *task == "" {
+		panic("No task")
+	}
 
 	file, err := os.Open(*inputFile)
 	if err != nil {
@@ -39,10 +32,18 @@ func main() {
 	}
 	defer output.Close()
 
-	rd := bufio.NewReader(file)
-
-	err = tasks.Task2(rd)
-	if err != nil {
-		log.Fatal(err)
+	switch *task {
+	case "task1":
+		err := tasks.StartTask1(file, output)
+		if err != nil {
+			log.Fatal(err)
+		}
+		break
+	case "task2":
+		err := tasks.StartTask2(file)
+		if err != nil {
+			log.Fatal(err)
+		}
+		break
 	}
 }
