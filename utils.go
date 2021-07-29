@@ -30,3 +30,21 @@ func printBoard(board Board) {
 		fmt.Println()
 	}
 }
+
+func checkIsAllNilColumn(column int, board Board) bool {
+	for i := 0; i < HEIGHT_OF_GAME_PLACE; i++ {
+		if board[i][column] != nil {
+			return false
+		}
+	}
+	return true
+}
+
+func checkIsAllNilRow(row int, board Board) bool {
+	for i := 0; i < WIDTH_OF_GAME_PLACE; i++ {
+		if board[row][i] != nil {
+			return false
+		}
+	}
+	return true
+}
