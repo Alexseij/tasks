@@ -559,7 +559,7 @@ func StartTask2(input *os.File) error {
 }
 
 func Task2(rd *bufio.Reader) error {
-	countOfGames, boards, err := readBoards(rd)
+	countOfGames, boards, err := ReadBoards(rd)
 	if err != nil {
 		return err
 	}
