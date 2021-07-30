@@ -13,7 +13,7 @@ That command has three flags :
 # Values for -task
 
 1) task1 - DigitalLab
-2) task2 - RGBGame
+2) task2 - RGBGame (have no output file)
 
 # How test tasks
 
