@@ -17,6 +17,8 @@ That command has three flags :
 
 # How test tasks
 
+Open main directory
+
 Use command : `go test -v`
 
 Note : If you want to change `task2_test.txt` file after every board should written `\n` byte.
