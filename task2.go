@@ -77,7 +77,10 @@ func ReadBoards(rd *bufio.Reader) (int, map[int]Board, error) {
 		}
 		m[i] = board
 		line, err = rd.ReadString('\n')
-		if err != nil && err != io.EOF {
+		if err != nil {
+			if err == io.EOF {
+				return countOfGames, m, nil
+			}
 			return 0, nil, err
 		}
 	}
@@ -87,7 +90,7 @@ func ReadBoards(rd *bufio.Reader) (int, map[int]Board, error) {
 
 // Function using for calculate points whitch incremets final scope
 // Returns : calcualted points
-func addPoints(removed int) int {
+func AddPoints(removed int) int {
 	return int(math.Pow(float64(removed-2), 2))
 }
 
@@ -102,7 +105,7 @@ func initClusterCoords() [][]byte {
 
 // Function using for set correct refference between each ball in board .
 // Each ball have refference to up , down , left and right ball
-func bindBoard(m map[int]Board) {
+func BindBoard(m map[int]Board) {
 	for _, board := range m {
 		for i := 0; i < HEIGHT_OF_GAME_PLACE; i++ {
 			for j := 0; j < WIDTH_OF_GAME_PLACE; j++ {
@@ -198,7 +201,7 @@ func findBottomMostBall(ball *Ball) *Ball {
 
 // Function finding largest cluster in board
 // Returns : size of cluster , leftmost and bottommost ball if have error return error , else nil
-func findLargestCluster(board Board) (int, *Ball, [][]byte, error) {
+func FindLargestCluster(board Board) (int, *Ball, [][]byte, error) {
 
 	sizeOfMaxCluester := 0
 	var maxClusterCoords [][]byte
@@ -250,7 +253,7 @@ func findLargestCluster(board Board) (int, *Ball, [][]byte, error) {
 
 // Function using for remove cluster form board
 // Using cluster mask for find indexes
-func removeCluster(coordsCluster [][]byte, board Board) {
+func RemoveCluster(coordsCluster [][]byte, board Board) {
 	for i := 0; i < HEIGHT_OF_GAME_PLACE; i++ {
 		for j := 0; j < WIDTH_OF_GAME_PLACE; j++ {
 			if coordsCluster[i][j] == 1 {
@@ -385,15 +388,18 @@ func findEmptyColumns(mask [][]byte, board Board) map[int]int {
 // That using same idea as a shiftDown() fundtion
 func swapCols(board Board, from, to int) {
 	for i := 0; i < HEIGHT_OF_GAME_PLACE; i++ {
+
 		temp := board[i][from]
 		board[i][from] = board[i][to]
 		board[i][to] = temp
-		board[i][to].X = to
-		board[i][to].Y = i
 
 		if board[i][to] == nil {
 			continue
 		}
+
+		board[i][to].X = to
+		board[i][to].Y = i
+
 		if to == 0 {
 			board[i][to].left = nil
 		} else {
@@ -445,12 +451,12 @@ func shitfLeft(board Board, mask [][]byte) {
 }
 
 // Function using for compress board after deleting cluster
-func compressBoard(board Board, mask [][]byte) {
+func CompressBoard(board Board, mask [][]byte) {
 	shiftDown(board)
 	shitfLeft(board, mask)
 }
 
-func checkIsAllBallsRemoved(board Board) bool {
+func CheckIsAllBallsRemoved(board Board) bool {
 	for i := 0; i < HEIGHT_OF_GAME_PLACE; i++ {
 		for j := 0; j < WIDTH_OF_GAME_PLACE; j++ {
 			if board[i][j] != nil {
@@ -474,7 +480,7 @@ func moveMessage(ball *Ball, removed, numOfMoves, addToScope int) string {
 }
 
 // Function using for checking is every cluster has only one ball
-func checkIsAllClusterHaveOne(board Board) (bool, int) {
+func CheckIsAllClusterHaveOne(board Board) (bool, int) {
 	countCountOfClusters := 0
 
 	for i := 0; i < HEIGHT_OF_GAME_PLACE; i++ {
@@ -504,9 +510,11 @@ func checkIsAllClusterHaveOne(board Board) (bool, int) {
 }
 
 // Main game cycle
-func playGame(board Board) error {
+// s - final scope  , a - amount of moves , c - count of alone clusters
+func PlayGame(board Board) (s int, a int, c int, err error) {
 	scope := 0
 	amountOfMoves := 0
+	//Clusters with one ball
 	countOfAloneClusters := 0
 
 	isAllBallsRemoved := false
@@ -516,29 +524,29 @@ func playGame(board Board) error {
 
 	for !isAllBallsRemoved && !isEveryClusteHasOne {
 
-		if ok, amount := checkIsAllClusterHaveOne(board); ok {
+		if ok, amount := CheckIsAllClusterHaveOne(board); ok {
 			countOfAloneClusters = amount
 			isEveryClusteHasOne = true
 			continue
 		}
 
-		size, ball, mask, err := findLargestCluster(board)
+		size, ball, mask, err := FindLargestCluster(board)
 		if err != nil {
-			return err
+			return 0, 0, 0, err
 		}
-		removeCluster(mask, board)
+		RemoveCluster(mask, board)
 		amountOfMoves++
-		points := addPoints(size)
+		points := AddPoints(size)
 		scope += points
 		fmt.Print(moveMessage(ball, size, amountOfMoves, points))
 
-		if checkIsAllBallsRemoved(board) {
+		if CheckIsAllBallsRemoved(board) {
 			isGiveBonus = true
 			isAllBallsRemoved = true
 			continue
 		}
 
-		compressBoard(board, mask)
+		CompressBoard(board, mask)
 	}
 	if isGiveBonus {
 		scope += 1000
@@ -546,7 +554,7 @@ func playGame(board Board) error {
 
 	fmt.Printf("Final scope: %d , with %d balls remaining.\n", scope, countOfAloneClusters)
 	fmt.Println()
-	return nil
+	return scope, amountOfMoves, countOfAloneClusters, nil
 }
 
 func StartTask2(input *os.File) error {
@@ -563,11 +571,11 @@ func Task2(rd *bufio.Reader) error {
 	if err != nil {
 		return err
 	}
-	bindBoard(boards)
+	BindBoard(boards)
 
 	for i := 0; i < countOfGames; i++ {
 		fmt.Printf("Game : %d\n", i+1)
-		err = playGame(boards[i])
+		_, _, _, err = PlayGame(boards[i])
 		if err != nil {
 			return err
 		}

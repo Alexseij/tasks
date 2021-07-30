@@ -18,7 +18,7 @@ func printMatrix(mask [][]byte) {
 	}
 }
 
-func printBoard(board Board) {
+func PrintBoard(board Board) {
 	for j := 0; j < HEIGHT_OF_GAME_PLACE; j++ {
 		for k := 0; k < WIDTH_OF_GAME_PLACE; k++ {
 			if board[j][k] == nil {
