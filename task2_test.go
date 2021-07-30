@@ -2,6 +2,7 @@ package tasks_test
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"testing"
@@ -200,8 +201,11 @@ func TestTask2First(t *testing.T) {
 
 	wantFinalScope := 3661
 	wantBallsRemaining := 1
+	fmt.Println("Before game")
 	tasks.PrintBoard(TestBoards[0])
 	PlayTestGame(t, TestBoards[0], wantMoves, wantFinalScope, wantBallsRemaining)
+	fmt.Println("After game")
+	tasks.PrintBoard(TestBoards[0])
 }
 
 func TestTask2Second(t *testing.T) {
@@ -250,8 +254,11 @@ func TestTask2Second(t *testing.T) {
 
 	wantFinalScope := 4920
 	wantBallsRemaining := 0
+	fmt.Println("Before game")
 	tasks.PrintBoard(TestBoards[1])
 	PlayTestGame(t, TestBoards[1], wantMoves, wantFinalScope, wantBallsRemaining)
+	fmt.Println("After game")
+	tasks.PrintBoard(TestBoards[1])
 
 }
 
@@ -260,8 +267,11 @@ func TestTask2Third(t *testing.T) {
 
 	wantFinalScope := 0
 	wantBallsRemaining := 150
+	fmt.Println("Before game")
 	tasks.PrintBoard(TestBoards[2])
 	PlayTestGame(t, TestBoards[2], wantMoves, wantFinalScope, wantBallsRemaining)
+	fmt.Println("After game")
+	tasks.PrintBoard(TestBoards[2])
 }
 
 func TestTask2Fourth(t *testing.T) {
@@ -277,8 +287,11 @@ func TestTask2Fourth(t *testing.T) {
 		"Y":       2,
 		"X":       1,
 	}
+	fmt.Println("Before game")
 	tasks.PrintBoard(TestBoards[3])
 	PlayTestGame(t, TestBoards[3], wantMoves, wantFinalScope, wantBallsRemaining)
+	fmt.Println("After game")
+	tasks.PrintBoard(TestBoards[3])
 }
 
 func TestTask2Fifth(t *testing.T) {
@@ -295,7 +308,10 @@ func TestTask2Fifth(t *testing.T) {
 		"Y":       1,
 		"X":       1,
 	}
+	fmt.Println("Before game")
 	tasks.PrintBoard(TestBoards[4])
 	PlayTestGame(t, TestBoards[4], wantMoves, wantFinalScope, wantBallsRemaining)
+	fmt.Println("After game")
+	tasks.PrintBoard(TestBoards[4])
 
 }

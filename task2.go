@@ -510,8 +510,7 @@ func CheckIsAllClusterHaveOne(board Board) (bool, int) {
 }
 
 // Main game cycle
-// s - final scope  , a - amount of moves , c - count of alone clusters
-func PlayGame(board Board) (s int, a int, c int, err error) {
+func PlayGame(board Board) error {
 	scope := 0
 	amountOfMoves := 0
 	//Clusters with one ball
@@ -532,7 +531,7 @@ func PlayGame(board Board) (s int, a int, c int, err error) {
 
 		size, ball, mask, err := FindLargestCluster(board)
 		if err != nil {
-			return 0, 0, 0, err
+			return err
 		}
 		RemoveCluster(mask, board)
 		amountOfMoves++
@@ -554,7 +553,7 @@ func PlayGame(board Board) (s int, a int, c int, err error) {
 
 	fmt.Printf("Final scope: %d , with %d balls remaining.\n", scope, countOfAloneClusters)
 	fmt.Println()
-	return scope, amountOfMoves, countOfAloneClusters, nil
+	return nil
 }
 
 func StartTask2(input *os.File) error {
@@ -575,7 +574,7 @@ func Task2(rd *bufio.Reader) error {
 
 	for i := 0; i < countOfGames; i++ {
 		fmt.Printf("Game : %d\n", i+1)
-		_, _, _, err = PlayGame(boards[i])
+		err = PlayGame(boards[i])
 		if err != nil {
 			return err
 		}
