@@ -1,5 +1,7 @@
 # How does it use ?
 
+Open `example` directory (`cd example`) 
+
 Use command : `go run main.go -task="TASK_NAME"`.
 
 That command has three flags :
