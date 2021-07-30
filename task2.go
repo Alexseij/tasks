@@ -247,6 +247,7 @@ func FindLargestCluster(board Board) (int, *Ball, [][]byte, error) {
 
 		}
 	}
+
 	return sizeOfMaxCluester, maxBall, maxClusterCoords, nil
 
 }
@@ -267,10 +268,10 @@ func RemoveCluster(coordsCluster [][]byte, board Board) {
 func shiftDown(board Board) {
 	for i := 0; i < WIDTH_OF_GAME_PLACE; i++ {
 		//Checking for usless col
-		if checkIsAllNilColumn(i, board) {
+		if CheckIsAllNilColumn(i, board) {
 			continue
 		}
-		// Staring from bottom and getting ball in that
+		// Starting searching ball from bottom and let ball to that
 		for j := HEIGHT_OF_GAME_PLACE - 1; j > 0; j-- {
 			k := j
 			for board[k][i] == nil && k > 0 {
@@ -283,6 +284,7 @@ func shiftDown(board Board) {
 				board[j][i].Y = j
 				board[j][i].X = i
 				// After changes we need to rewrite refferences to ball in different directions
+				// and checkin for border situation in board
 
 				// Down ball
 				if j == HEIGHT_OF_GAME_PLACE-1 {
@@ -358,6 +360,7 @@ loopFromIndex:
 			return fromIndex, toIndex
 		}
 	}
+
 	return fromIndex, WIDTH_OF_GAME_PLACE
 }
 
@@ -368,6 +371,7 @@ func findEmptyColumns(mask [][]byte, board Board) map[int]int {
 
 	cols := make(map[int]int)
 	countOfCols := 0
+
 	for i := fromIndex; i < toIndex; i++ {
 		isEmptyColumn := true
 		for j := 0; j < HEIGHT_OF_GAME_PLACE; j++ {
@@ -381,11 +385,12 @@ func findEmptyColumns(mask [][]byte, board Board) map[int]int {
 			countOfCols++
 		}
 	}
+
 	return cols
 }
 
 // Function using for swap columns in board
-// That using same idea as a shiftDown() fundtion
+// That using same idea as a shiftDown() function
 func swapCols(board Board, from, to int) {
 	for i := 0; i < HEIGHT_OF_GAME_PLACE; i++ {
 
@@ -481,6 +486,7 @@ func moveMessage(ball *Ball, removed, numOfMoves, addToScope int) string {
 
 // Function using for checking is every cluster has only one ball
 func CheckIsAllClusterHaveOne(board Board) (bool, int) {
+	// How many clusters with one ball
 	countCountOfClusters := 0
 
 	for i := 0; i < HEIGHT_OF_GAME_PLACE; i++ {
@@ -495,7 +501,7 @@ func CheckIsAllClusterHaveOne(board Board) (bool, int) {
 			right := board[i][j].right
 			down := board[i][j].down
 			up := board[i][j].up
-
+			// If ball have reference to another ball it in cluster
 			if (left != nil && left.Value == value) ||
 				(right != nil && right.Value == value) ||
 				(up != nil && up.Value == value) ||
