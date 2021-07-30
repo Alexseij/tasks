@@ -2,14 +2,14 @@ package tasks
 
 import "fmt"
 
-func printQueue(queue []*Ball) {
+func PrintQueue(queue []*Ball) {
 	for i := 0; i < len(queue); i++ {
 		fmt.Print(queue[i].Value, " ")
 	}
 	fmt.Println()
 }
 
-func printMatrix(mask [][]byte) {
+func PrintMatrix(mask [][]byte) {
 	for i := 0; i < HEIGHT_OF_GAME_PLACE; i++ {
 		for j := 0; j < WIDTH_OF_GAME_PLACE; j++ {
 			fmt.Print(mask[i][j], " ")
@@ -31,7 +31,7 @@ func PrintBoard(board Board) {
 	}
 }
 
-func checkIsAllNilColumn(column int, board Board) bool {
+func CheckIsAllNilColumn(column int, board Board) bool {
 	for i := 0; i < HEIGHT_OF_GAME_PLACE; i++ {
 		if board[i][column] != nil {
 			return false
@@ -40,7 +40,7 @@ func checkIsAllNilColumn(column int, board Board) bool {
 	return true
 }
 
-func checkIsAllNilRow(row int, board Board) bool {
+func CheckIsAllNilRow(row int, board Board) bool {
 	for i := 0; i < WIDTH_OF_GAME_PLACE; i++ {
 		if board[row][i] != nil {
 			return false
